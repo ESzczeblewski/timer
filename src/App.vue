@@ -1,25 +1,30 @@
 <template>
   <div id="app">
-    <select name="modes" class="modes">
-      <option value="dark" @click="switchBackground">Standard</option>
-      <option value="mountains" @click="switchBackground">Góry</option>
-      <option value="spring" @click="switchBackground">Wiosna</option>
+    <select :value="language">
+      <option @click="SET_LANGUAGE('enEN')" value="enEN">English</option>
+      <option @click="SET_LANGUAGE('plPL')" value="plPL">Polski</option>
+    </select>
+    <select name="modes" class="modes" @change="switchBackground()">
+      <option value="dark">{{ app__text('global', 'Default') }}</option>
+      <option value="mountains">{{ app__text('global', 'Mountains') }}</option>
+      <option value="spring">{{ app__text('global', 'Spring') }}</option>
     </select>
     <div class="new__timer">
-      <button class="new__timer__add" @click="addTimer"><span>+</span></button>
-      <label class="new__timer__label" for="datepicker">Nowy licznik</label>
+      <button class="new__timer__add" @click="addTimer()"><span>+</span></button>
+      <label class="new__timer__label" for="datepicker">{{ app__text('global', 'New timer') }}</label>
       <input type="text" name="datepicker" class="new__timer__date" v-model="dueDate">
     </div>
-    <count-down v-for="timer in timers" :key="timer.id" :days="timer.days" @deleteComponent="deleteTimer(timer)"></count-down>
+    <countDown v-for="(timer, index) in timers" :key="index" :id="timer.id" :days="timer.days" @delete="deleteTimer($event)"/>
   </div>
 </template>
 
 <script>
 
-import CountDown from './components/CountDown'
+import { mapState, mapActions } from 'vuex';
+import countDown from './components/countDown'
 
 export default {
-  components: { CountDown },
+  components: { countDown },
   name: 'app',
 
   data () {
@@ -31,6 +36,9 @@ export default {
   },
 
   methods: {
+
+    ...mapActions(['SET_LANGUAGE']),
+
     validateDate() {
       const date = this.dueDate.slice(0, 10);
       const time = this.dueDate.slice(11);
@@ -60,9 +68,8 @@ export default {
       this.updateLS();
     },
 
-    deleteTimer(timer) {
-      const index = this.timers.indexOf(timer);
-      this.timers.splice(index, 1);
+    deleteTimer(id) {
+      this.timers = this.timers.filter(timer => timer.id !== id)
 
       this.updateLS();
     },
@@ -73,7 +80,11 @@ export default {
     },
 
     getTimersFromLS() {
-      const lsTimers = JSON.parse(localStorage.getItem('timers'));
+      const timers = localStorage.getItem('timers');
+
+      if (!timers) return;
+
+      const lsTimers = JSON.parse(timers);
       this.timers.push(...lsTimers);
     },
 
@@ -95,10 +106,12 @@ export default {
     }
   },
 
+  computed: {
+    ...mapState(['language'])
+  },
+
   created() {
-    if (localStorage.getItem('timers')) {
-      this.getTimersFromLS();
-    }
+    this.getTimersFromLS();
   }
 }
 </script>
@@ -137,6 +150,7 @@ export default {
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
+    overflow-y: auto;
 
     .modes {
       align-self: flex-start;

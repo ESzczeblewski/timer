@@ -1,31 +1,34 @@
 <template>
   <div class="count__down">
     <div class="count__down__num">{{ daysLeft }}
-      <p>Dni</p>
+      <p>{{ app__text('global', 'Days') }}</p>
     </div>
     <span>:</span>
     <div class="count__down__num">{{ hoursLeft }}
-      <p>Godziny</p>
+      <p>{{ app__text('global', 'Hours') }}</p>
     </div>
     <span>:</span>
     <div class="count__down__num">{{ minutesLeft }}
-      <p>Minuty</p>
+      <p>{{ app__text('global', 'Minutes') }}</p>
     </div>
     <span>:</span>
     <div class="count__down__num">{{ secondsLeft }}
-      <p>Sekundy</p>
+      <p>{{ app__text('global', 'Seconds') }}</p>
     </div>
-    <button class="count__down__delete" @click="deleteComponent">X</button>
+    <button class="count__down__delete" @click="deleteTimer()">X</button>
     <div class="count__down__end" :class="{'count__down__end--active': hasEnded}">
       <p>Odliczanie zakonczone</p>
-      <button @click="deleteComponent">Usuń</button>
-      <button @click="resetTimer">Reset</button>
+      <button @click="deleteTimer()">Usuń</button>
+      <button @click="resetTimer()">Reset</button>
     </div>
   </div>
 </template>
 
 <script>
+
   export default {
+
+    name: 'countDown',
 
     data() {
       return {
@@ -39,7 +42,18 @@
       }
     },
 
-    props: ['days'],
+    props: {
+      days: {
+        type: String,
+        default: '',
+        required: true,
+      },
+
+      id: {
+        type: Number,
+        required: true
+      }
+    },
 
     methods: {
       startTimer() {
@@ -69,8 +83,8 @@
 
       },
 
-      deleteComponent() {
-        this.$emit('deleteComponent', this.deleteComponent)
+      deleteTimer() {
+        this.$emit('delete', this.id);
       },
 
       resetTimer() {
@@ -96,6 +110,7 @@
     width: 90%;
     max-width: 30em;
     height: 8em;
+    min-height: 6em;
     margin-bottom: 1em;
     background: rgb(96,138,215);
     background: linear-gradient(121deg, rgba(96,138,215,1) 48%, rgba(144,234,252,1) 100%);
