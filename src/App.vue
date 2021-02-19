@@ -1,9 +1,14 @@
 <template>
   <div id="app">
-    <div class="new--timer">
-      <button class="new--timer--add" @click="addTimer">+</button>
-      <label for="datepicker">Nowy licznik</label>
-      <input type="text" name="datepicker" id="date" v-model="dueDate">
+    <select name="modes" class="modes">
+      <option value="dark" @click="switchBackground">Standard</option>
+      <option value="mountains" @click="switchBackground">Góry</option>
+      <option value="spring" @click="switchBackground">Wiosna</option>
+    </select>
+    <div class="new__timer">
+      <button class="new__timer__add" @click="addTimer"><span>+</span></button>
+      <label class="new__timer__label" for="datepicker">Nowy licznik</label>
+      <input type="text" name="datepicker" class="new__timer__date" v-model="dueDate">
     </div>
     <count-down v-for="timer in timers" :key="timer.id" :days="timer.days" @deleteComponent="deleteTimer(timer)"></count-down>
   </div>
@@ -20,7 +25,8 @@ export default {
   data () {
     return {
       dueDate: new Date().toISOString().substr(0, 19).replace('T', ' '),
-      timers: []
+      timers: [],
+      backgroundImg: '',
     }
   },
 
@@ -69,6 +75,23 @@ export default {
     getTimersFromLS() {
       const lsTimers = JSON.parse(localStorage.getItem('timers'));
       this.timers.push(...lsTimers);
+    },
+
+    switchBackground() {
+      const select = document.querySelector('.modes');
+      const classes = ['mountains', 'spring'];
+
+      classes.forEach(item => {
+        document.body.classList.remove(item);
+      })
+
+      if (select.value === 'mountains') {
+        document.body.classList.toggle('mountains')
+      }
+
+      if (select.value === 'spring') {
+        document.body.classList.toggle('spring')
+      }
     }
   },
 
@@ -80,4 +103,89 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Fredoka One', cursive;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(255, 242, 222);
+
+    &.mountains {
+      background-image: url('./assets/mauntains.jpg');
+      background-size: cover;
+    }
+
+    &.spring {
+      background-image: url('./assets/spring.jpg');
+      background-size: cover;
+    }
+  }
+
+  #app {
+    background-color: rgba(226, 226, 226, 0.808);
+    height: 80vh;
+    width: 50vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+    .modes {
+      align-self: flex-start;
+      margin: 1em;
+      cursor: pointer;
+    }
+
+    .new__timer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-width: 28em;
+      margin-bottom: 2em;
+
+      &__date {
+        color: #333;
+        font-size: 1.2rem;
+        margin: 0;
+        padding: .5em 1em;
+        border-radius: 0.2rem;
+        background-color: rgb(255, 255, 255);
+        border: none;
+        width: 50%;
+        display: block;
+        border-bottom: 0.3rem solid transparent;
+      }
+
+      &__label,
+      &__add {
+        font-size: 1.5rem;
+      }
+
+      &__add {
+        background-color: white;
+        border-style: none;
+        border-radius: .2em;
+        font-size: 2rem;
+        display: block;
+        cursor: pointer;
+
+        span {
+          display: flex;
+          align-items: center;
+          line-height: 1.5em;
+          text-align: center;
+        }
+      }
+    }
+  }
+
+
+</style>

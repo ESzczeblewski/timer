@@ -1,12 +1,23 @@
 <template>
   <div class="count__down">
-    <div class="count__down__days">{{ daysLeft }}</div>
-    <div class="count__down__hrs">{{ hoursLeft }}</div>
-    <div class="count__down__mins">{{ minutesLeft }}</div>
-    <div class="count__down__secs">{{ secondsLeft }}</div>
-    <button @click="deleteComponent">X</button>
+    <div class="count__down__num">{{ daysLeft }}
+      <p>Dni</p>
+    </div>
+    <span>:</span>
+    <div class="count__down__num">{{ hoursLeft }}
+      <p>Godziny</p>
+    </div>
+    <span>:</span>
+    <div class="count__down__num">{{ minutesLeft }}
+      <p>Minuty</p>
+    </div>
+    <span>:</span>
+    <div class="count__down__num">{{ secondsLeft }}
+      <p>Sekundy</p>
+    </div>
+    <button class="count__down__delete" @click="deleteComponent">X</button>
     <div class="count__down__end" :class="{'count__down__end--active': hasEnded}">
-      <p>Odliczanie zakończone</p>
+      <p>Odliczanie zakonczone</p>
       <button @click="deleteComponent">Usuń</button>
       <button @click="resetTimer">Reset</button>
     </div>
@@ -23,7 +34,8 @@
         minutesLeft: '00',
         secondsLeft: '00',
         hasEnded: false,
-        countDownDate: '',
+        countDownDate: 0,
+        initialTimeDifference: new Date(this.days).getTime() - new Date().getTime(),
       }
     },
 
@@ -34,7 +46,6 @@
         this.countDownDate = new Date(this.days).getTime();
 
         const interval = setInterval(() => {
-
           const now = new Date().getTime();
           const timeDifference = this.countDownDate - now;
 
@@ -65,6 +76,7 @@
       resetTimer() {
         this.startTimer();
         this.hasEnded = false;
+        this.countDownDate = this.initialTimeDifference + new Date().getTime();
       }
     },
 
@@ -79,10 +91,46 @@
   .count__down {
     position: relative;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
-    width: 200px;
-    height: 80px;
+    width: 90%;
+    max-width: 30em;
+    height: 8em;
+    margin-bottom: 1em;
+    background: rgb(96,138,215);
+    background: linear-gradient(121deg, rgba(96,138,215,1) 48%, rgba(144,234,252,1) 100%);
+    border-radius: 1em;
+
+    &__num {
+      color: rgb(255, 255, 255);
+      font-size: 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      p {
+        font-size: 1rem;
+        margin: 0;
+      }
+
+    }
+
+    span {
+      color: rgb(255, 255, 255);
+      font-size: 1.5rem;
+    }
+
+    &__delete {
+      width: 1.5em;
+      height: 1.5em;
+      border-radius: 50%;
+      border-style: none;
+      background-color: rgba(255, 255, 255, 0.911);
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: rgb(96,138,215);
+      cursor: pointer;
+    }
 
     &__end {
       display: none;
@@ -91,10 +139,30 @@
       right: 0;
       bottom: 0;
       left: 0;
-      background-color: grey;
+      background-color: rgb(96,138,215);
+      border-radius: 1em;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+
+      p {
+        margin: 0;
+        color: rgb(255, 255, 255);
+        font-size: 1.5rem;
+      }
+
+      button {
+        font-weight: bold;
+        color: rgb(255, 255, 255);
+        background-color: rgb(128, 128, 128);
+        border-style: none;
+        width: 6em;
+        height: 2em;
+        cursor: pointer;
+      }
 
       &--active {
-        display: block;
+        display: flex;
       }
     }
   }
